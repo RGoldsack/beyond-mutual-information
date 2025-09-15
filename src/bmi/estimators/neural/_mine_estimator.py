@@ -26,6 +26,7 @@ from bmi.estimators.neural._types import BatchedPoints, Critic
 from bmi.interface import BaseModel, EstimateResult, IMutualInformationPointEstimator
 from bmi.utils import ProductSpace
 
+import gc # new
 
 def logmeanexp(vs):
     return logsumexp(vs) - jnp.log(len(vs))
@@ -211,9 +212,13 @@ def mine_training(
     training_log = TrainingLog(
         max_n_steps=max_n_steps, early_stopping=early_stopping, verbose=verbose
     )
-    keys = jax.random.split(rng, max_n_steps)
-    for n_step, key in enumerate(keys, start=1):
-        key_sample, key_test = jax.random.split(key)
+    # keys = jax.random.split(rng, max_n_steps)
+    key = rng # new 
+    # for n_step, key in enumerate(keys, start=1):
+    for n_step in range(1, max_n_steps+1):
+        # key_sample, key_test = jax.random.split(key)
+        key, key_step = jax.random.split(key)
+        key_sample, key_test = jax.random.split(key_step)
 
         # sample
         xs_batch, ys_batch_paired, ys_batch_unpaired = _sample_paired_unpaired(
@@ -245,8 +250,16 @@ def mine_training(
         # early stop?
         if training_log.early_stop():
             break
+        xs_batch.delete()
+        ys_batch_paired.delete()
+        ys_batch_unpaired.delete()
+        # xs_test.delete()
+        # ys_test_unpaired.delete()
+        del xs_batch, ys_batch_paired, ys_batch_unpaired #, xs_test, ys_test_unpaired
 
     training_log.finish()
+    jax.clear_caches()   # clears jit/compilation & staging caches
+    gc.collect()         # free Python objects if you dropped all refs
 
     return training_log, critic
 
