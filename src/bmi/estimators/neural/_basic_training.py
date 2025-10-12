@@ -9,7 +9,7 @@ import optax
 from bmi.estimators.neural._training_log import TrainingLog
 from bmi.estimators.neural._types import BatchedPoints, Critic, Point
 
-import gc # new
+import gc 
 
 def get_batch(xs: BatchedPoints, ys: BatchedPoints, key: jax.Array, batch_size: Optional[int]):
     if batch_size is not None:
@@ -73,10 +73,11 @@ def basic_training(
     training_log = TrainingLog(
         max_n_steps=max_n_steps, early_stopping=early_stopping, verbose=verbose
     )
+    # We no longer use the following line here and in '_mine_estimator.py':
     # keys = jax.random.split(rng, max_n_steps) 
+    # Due to memory leaks outlined in:
     # https://github.com/jax-ml/jax/issues/17432
     key = rng 
-    # for n_step, key in enumerate(keys, start=1):
     for n_step in range(1, max_n_steps+1):
         # run step
         key, subkey = jax.random.split(key) # new

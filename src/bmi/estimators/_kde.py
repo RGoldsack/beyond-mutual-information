@@ -10,7 +10,7 @@ from sklearn.neighbors import KernelDensity
 from bmi.interface import BaseModel, IMutualInformationPointEstimator
 from bmi.utils import ProductSpace
 
-import gc # new
+import gc
 
 def _differential_entropy(estimator: KernelDensity, samples: np.ndarray) -> float:
     """Estimates the differential entropy of a distribution by fitting
@@ -134,7 +134,6 @@ class KDEMutualInformationEstimator(IMutualInformationPointEstimator):
 
         mutual_information = h_x + h_y - h_xy
 
-        # new
         del space, x, y
         gc.collect()
 

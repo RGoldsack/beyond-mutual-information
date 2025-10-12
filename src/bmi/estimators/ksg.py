@@ -14,7 +14,7 @@ from bmi.utils import ProductSpace, chunker
 
 _AllowedContinuousMetric = Literal["euclidean", "manhattan", "chebyshev"]
 
-import gc # new
+import gc 
 
 class KSGEnsembleParameters(pydantic.BaseModel):
     neighborhoods: list[int]
@@ -125,7 +125,6 @@ class KSGEnsembleFirstEstimator(IMutualInformationPointEstimator):
                 # We calculate mean(digammas) over all the points rather than the batch
                 digammas_mean_contribution = np.sum(digammas / n_points)
                 digammas_dict[k].append(digammas_mean_contribution)
-            # new
         del x, y
 
         for k, digammas in digammas_dict.items():

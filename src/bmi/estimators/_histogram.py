@@ -14,7 +14,7 @@ from numpy.typing import ArrayLike
 from bmi.interface import BaseModel, IMutualInformationPointEstimator
 from bmi.utils import ProductSpace
 
-import gc # new
+import gc 
 
 class HistogramEstimatorParams(BaseModel):
     n_bins_x: pydantic.PositiveInt
@@ -76,7 +76,6 @@ class HistogramEstimator(IMutualInformationPointEstimator):
             for j in range(range_y):
                 if p_xy[i, j] > 0:
                     mi += p_xy[i, j] * (np.log(p_xy[i, j]) - np.log(p_x[i]) - np.log(p_y[j]))
-        # new
         del x, y
         gc.collect()
 
